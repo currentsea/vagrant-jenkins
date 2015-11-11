@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+
+  config.vm.box_check_update = true
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.network "forwarded_port", guest: 8080, host: 9080
+  config.vm.network "forwarded_port", guest: 9000, host: 9000
+
+  config.vm.provider "virtualbox" do |vb|  
+    vb.memory = "4096"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo apt-get update
+    sudo apt-get install -y git
+    sudo wget https://raw.githubusercontent.com/frappe/bench/master/install_scripts/setup_frappe.sh
+    sudo bash setup_frappe.sh --setup-production
+  SHELL
+end
